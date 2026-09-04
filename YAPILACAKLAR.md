@@ -16,11 +16,11 @@ Referans desen: **Kotlin** (diğer SDK'lar "referans buydu" der). Kaynak hakikat
 
 ## Faz durumu
 - [x] Faz 0 — iskelet (solution, csproj, .gitignore, LICENSE, README)
-- [ ] Faz 1 — Transport + Json
-- [ ] Faz 2 — Hata hiyerarşisi
-- [ ] Faz 3 — Retry
-- [ ] Faz 4 — Sayfalama
-- [ ] Faz 5 — Model üretici
+- [x] Faz 1 — Transport + Json
+- [x] Faz 2 — Hata hiyerarşisi
+- [x] Faz 3 — Retry
+- [x] Faz 4 — Sayfalama
+- [x] Faz 5 — Model üretici (56 tip üretildi)
 - [ ] Faz 6 — Auth + Actors
 - [ ] Faz 7 — Posts + Comments
 - [ ] Faz 8 — Feed + Search + Tags

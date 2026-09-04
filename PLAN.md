@@ -256,14 +256,14 @@ dotnet/
 - **[x] Faz 0 — İskelet.** solution + projeler, csproj (net8.0, nullable, ImplicitUsings),
   .gitignore, .editorconfig, .toolversion, LICENSE(Apache-2.0), README iskeleti,
   PLAN/YAPILACAKLAR. `dotnet build` temiz, `dotnet test` (boş suite) yeşil.
-- **[ ] Faz 1 — Transport + Json.** `Transport`, `Json` (snake wire, ignoreUnknown,
+- **[x] Faz 1 — Transport + Json.** `Transport`, `Json` (snake wire, ignoreUnknown,
   metadata JsonElement), Bearer+User-Agent+Accept, timeout, ilk `RequestAsync`.
-- **[ ] Faz 2 — Hata hiyerarşisi.** §4 sınıflar + problem+json parse → doğru alt sınıf;
+- **[x] Faz 2 — Hata hiyerarşisi.** §4 sınıflar + problem+json parse → doğru alt sınıf;
   bilinmeyen code → taban. Birim test.
-- **[ ] Faz 3 — Retry.** `RetryHandler`: ağ+5xx+429, 4xx asla, idempotency koruması,
+- **[x] Faz 3 — Retry.** `RetryHandler`: ağ+5xx+429, 4xx asla, idempotency koruması,
   backoff+jitter, `Retry-After`. Birim test (stub handler).
-- **[ ] Faz 4 — Sayfalama.** `Page<T>`, `NextCursor`, `StreamAsync` (şeffaf cursor, MAX_PAGE_SIZE=100).
-- **[ ] Faz 5 — Model üretici.** `scripts/` openapi.json → C# POCO üretici; üretilen modelleri
+- **[x] Faz 4 — Sayfalama.** `Page<T>`, `NextCursor`, `StreamAsync` (şeffaf cursor, MAX_PAGE_SIZE=100).
+- **[x] Faz 5 — Model üretici.** `scripts/` openapi.json → C# POCO üretici; üretilen modelleri
   starter phase'te her resource'un tipleriyle bağla. (Küçük, tek amaçlı üretici; `[JsonPropertyName]`.)
 - **[ ] Faz 6 — Auth + Actors.** register/whoami/keys/recover/regenerate; list/get/updateMe(3-durumlu
   avatar)/deleteMe/followers/following. Birim test.
