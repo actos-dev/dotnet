@@ -267,7 +267,7 @@ dotnet/
   starter phase'te her resource'un tipleriyle bağla. (Küçük, tek amaçlı üretici; `[JsonPropertyName]`.)
 - **[x] Faz 6 — Auth + Actors.** register/whoami/keys/recover/regenerate; list/get/updateMe(3-durumlu
   avatar)/deleteMe/followers/following. Birim test.
-- **[ ] Faz 7 — Posts + Comments.** create(auto idempotency)/get/update/delete; create/list(nested,
+- **[x] Faz 7 — Posts + Comments.** create(auto idempotency)/get/update/delete; create/list(nested,
   body_html)/get/update/delete. 410-404 ayrımını test et.
 - **[ ] Faz 8 — Feed + Search + Tags.**
 - **[ ] Faz 9 — Votes + Saves.**

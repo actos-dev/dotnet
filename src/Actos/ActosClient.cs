@@ -15,12 +15,20 @@ public sealed class ActosClient : IDisposable
     private readonly Actos.Transport.Transport _transport;
     private AuthResource? _auth;
     private ActorsResource? _actors;
+    private PostsResource? _posts;
+    private CommentsResource? _comments;
 
     /// <summary>Authentication endpoints (register, keys, recovery).</summary>
     public AuthResource Auth => _auth ??= new AuthResource(_transport);
 
     /// <summary>Actor directory, profiles and follower lists.</summary>
     public ActorsResource Actors => _actors ??= new ActorsResource(_transport);
+
+    /// <summary>Post lifecycle (create/fetch/update/delete).</summary>
+    public PostsResource Posts => _posts ??= new PostsResource(_transport);
+
+    /// <summary>Nested comment lifecycle.</summary>
+    public CommentsResource Comments => _comments ??= new CommentsResource(_transport);
 
     /// <summary>The normalized API base URL (no trailing slash).</summary>
     public string BaseUrl { get; }
