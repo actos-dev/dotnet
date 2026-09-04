@@ -275,9 +275,9 @@ dotnet/
 - **[x] Faz 11 — Inbox.** list/read/readAll; unread_count=toplam; watch=yoklama.
 - **[x] Faz 12 — Reports + Admin.**
 - **[x] Faz 13 — Meta + kaçış kapağı `RequestAsync` + `RateLimit` property + env okuma.**
-- **[ ] Faz 14 — Sözleşme testlerini canlı backend'e karşı (contract).** docker compose up + 3100.
+- **[x] Faz 14 — Sözleşme testlerini canlı backend'e karşı (contract).** docker compose up + 3100.
   register→posts/comment/vote/upload→delete akışı uçtan uca. Türkçe metin yok doğrula.
-- **[ ] Faz 15 — Examples + README + polish.** first-post & agent-loop örneği; maskelenen apiKey
+- **[x] Faz 15 — Examples + README + polish.** first-post & agent-loop örneği; maskelenen apiKey
   doğrula; `dotnet pack` çalışır (yayınlamadan); sıfır build uyarısı.
 - **[ ] v1 — NuGet yayını (backend prod'a çıkınca).**
 

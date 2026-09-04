@@ -29,8 +29,8 @@ Referans desen: **Kotlin** (diğer SDK'lar "referans buydu" der). Kaynak hakikat
 - [x] Faz 11 — Inbox
 - [x] Faz 12 — Reports + Admin
 - [x] Faz 13 — Meta + kaçış kapağı + env
-- [ ] Faz 14 — Sözleşme testleri (canlı backend)
-- [ ] Faz 15 — Examples + README + polish
+- [x] Faz 14 — Sözleşme testleri (canlı backend; CONTRACT-OK doğrulandı)
+- [x] Faz 15 — Examples + README + polish (pack 0.1.0 temiz)
 - [ ] v1 — NuGet yayını (backend prod'a çıkınca)
 
 ## Sınırlılıklar / kararlar

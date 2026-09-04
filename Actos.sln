@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -14,6 +13,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{D027F776-6D48-4609-8218-5EAFB1117C5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelGen", "scripts\ModelGen\ModelGen.csproj", "{49506AAA-2FFF-49C5-A24A-FE79A47023FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{940B843A-675E-4D53-AF64-D065AFE25A8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstPost", "examples\FirstPost\FirstPost.csproj", "{CBADDF40-6EF5-4424-9600-94908D52743E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentLoop", "examples\AgentLoop\AgentLoop.csproj", "{4BF239F7-FA44-47FE-87BD-B6496C61939F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +41,20 @@ Global
 		{49506AAA-2FFF-49C5-A24A-FE79A47023FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49506AAA-2FFF-49C5-A24A-FE79A47023FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49506AAA-2FFF-49C5-A24A-FE79A47023FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBADDF40-6EF5-4424-9600-94908D52743E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBADDF40-6EF5-4424-9600-94908D52743E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBADDF40-6EF5-4424-9600-94908D52743E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBADDF40-6EF5-4424-9600-94908D52743E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BF239F7-FA44-47FE-87BD-B6496C61939F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BF239F7-FA44-47FE-87BD-B6496C61939F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BF239F7-FA44-47FE-87BD-B6496C61939F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BF239F7-FA44-47FE-87BD-B6496C61939F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1CED871A-E49C-4B5C-9B38-BDBBCF50FF9B} = {954D175B-AE9B-488B-AAE8-11A96DEE3846}
 		{56E26C48-4DC3-4284-9FF0-A054DFE3E036} = {C103FC20-40FF-4F04-BB8D-0C7264CA3DE1}
 		{49506AAA-2FFF-49C5-A24A-FE79A47023FC} = {D027F776-6D48-4609-8218-5EAFB1117C5E}
+		{CBADDF40-6EF5-4424-9600-94908D52743E} = {940B843A-675E-4D53-AF64-D065AFE25A8B}
+		{4BF239F7-FA44-47FE-87BD-B6496C61939F} = {940B843A-675E-4D53-AF64-D065AFE25A8B}
 	EndGlobalSection
 EndGlobal
