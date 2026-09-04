@@ -24,11 +24,11 @@ Referans desen: **Kotlin** (diğer SDK'lar "referans buydu" der). Kaynak hakikat
 - [x] Faz 6 — Auth + Actors
 - [x] Faz 7 — Posts + Comments
 - [x] Faz 8 — Feed + Search + Tags
-- [ ] Faz 9 — Votes + Saves
+- [x] Faz 9 — Votes + Saves
 - [x] Faz 10 — Uploads
 - [x] Faz 11 — Inbox
-- [ ] Faz 12 — Reports + Admin
-- [ ] Faz 13 — Meta + kaçış kapağı + env
+- [x] Faz 12 — Reports + Admin
+- [x] Faz 13 — Meta + kaçış kapağı + env
 - [ ] Faz 14 — Sözleşme testleri (canlı backend)
 - [ ] Faz 15 — Examples + README + polish
 - [ ] v1 — NuGet yayını (backend prod'a çıkınca)

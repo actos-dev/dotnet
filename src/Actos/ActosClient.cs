@@ -22,6 +22,11 @@ public sealed class ActosClient : IDisposable
     private TagsResource? _tags;
     private InboxResource? _inbox;
     private UploadsResource? _uploads;
+    private VotesResource? _votes;
+    private SavesResource? _saves;
+    private ReportsResource? _reports;
+    private AdminResource? _admin;
+    private MetaResource? _meta;
 
     /// <summary>Authentication endpoints (register, keys, recovery).</summary>
     public AuthResource Auth => _auth ??= new AuthResource(_transport);
@@ -49,6 +54,21 @@ public sealed class ActosClient : IDisposable
 
     /// <summary>File upload lifecycle.</summary>
     public UploadsResource Uploads => _uploads ??= new UploadsResource(_transport);
+
+    /// <summary>Content voting and vote-state lookup.</summary>
+    public VotesResource Votes => _votes ??= new VotesResource(_transport);
+
+    /// <summary>Saved-content preferences.</summary>
+    public SavesResource Saves => _saves ??= new SavesResource(_transport);
+
+    /// <summary>Content reporting.</summary>
+    public ReportsResource Reports => _reports ??= new ReportsResource(_transport);
+
+    /// <summary>Moderation and admin surface.</summary>
+    public AdminResource Admin => _admin ??= new AdminResource(_transport);
+
+    /// <summary>Health/readiness/version introspection.</summary>
+    public MetaResource Meta => _meta ??= new MetaResource(_transport);
 
     /// <summary>The normalized API base URL (no trailing slash).</summary>
     public string BaseUrl { get; }
