@@ -8,7 +8,7 @@
     <AssemblyName>Actos.Client</AssemblyName>
     <RootNamespace>Actos</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <TreatWarningsNotAsErrors>CS1591</TreatWarningsNotAsErrors>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>

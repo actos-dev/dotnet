@@ -28,6 +28,9 @@ public sealed class ScriptedHttpMessageHandler : HttpMessageHandler
     /// <summary>The most recent request dispatched through this handler.</summary>
     public HttpRequestMessage? LastRequest { get; private set; }
 
+    /// <summary>The string body of the most recent request (captured before disposal), or <see langword="null"/>.</summary>
+    public string? LastRequestBody { get; private set; }
+
     /// <summary>Queues a response that will be returned on the next send.</summary>
     public void Enqueue(HttpResponseMessage response) => _responses.Enqueue(response);
 
@@ -35,6 +38,7 @@ public sealed class ScriptedHttpMessageHandler : HttpMessageHandler
     {
         RequestCount++;
         LastRequest = request;
+        LastRequestBody = request.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
         if (ThrowError?.Invoke(RequestCount) is { } error)
         {
             throw error;

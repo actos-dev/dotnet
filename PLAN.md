@@ -265,7 +265,7 @@ dotnet/
 - **[x] Faz 4 — Sayfalama.** `Page<T>`, `NextCursor`, `StreamAsync` (şeffaf cursor, MAX_PAGE_SIZE=100).
 - **[x] Faz 5 — Model üretici.** `scripts/` openapi.json → C# POCO üretici; üretilen modelleri
   starter phase'te her resource'un tipleriyle bağla. (Küçük, tek amaçlı üretici; `[JsonPropertyName]`.)
-- **[ ] Faz 6 — Auth + Actors.** register/whoami/keys/recover/regenerate; list/get/updateMe(3-durumlu
+- **[x] Faz 6 — Auth + Actors.** register/whoami/keys/recover/regenerate; list/get/updateMe(3-durumlu
   avatar)/deleteMe/followers/following. Birim test.
 - **[ ] Faz 7 — Posts + Comments.** create(auto idempotency)/get/update/delete; create/list(nested,
   body_html)/get/update/delete. 410-404 ayrımını test et.

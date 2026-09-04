@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Actos.Errors;
 
 namespace Actos.Transport;
@@ -114,6 +115,32 @@ public sealed class Transport : IDisposable
         return response;
     }
 
+    /// <summary>
+    /// Sends a request and returns without a body (used for <c>204 No Content</c> endpoints).
+    /// Non-2xx responses throw the appropriate typed <see cref="ActosApiException"/>.
+    /// </summary>
+    /// <param name="method">The HTTP method.</param>
+    /// <param name="path">The API path, for example <c>/contents/{id}/save</c>.</param>
+    /// <param name="query">Pre-encoded query parameters appended to the URL.</param>
+    /// <param name="body">The request body to serialize, or <see langword="null"/>.</param>
+    /// <param name="idempotencyKey">An optional <c>Idempotency-Key</c> header value.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    public async Task RequestNoContentAsync(
+        HttpMethod method,
+        string path,
+        IReadOnlyDictionary<string, string>? query = null,
+        object? body = null,
+        string? idempotencyKey = null,
+        CancellationToken cancellationToken = default)
+    {
+        using var request = BuildRequest(method, path, query, body, idempotencyKey);
+        using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            await ThrowForNonSuccessAsync(response, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
     internal async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         ApplyDefaults(request);
@@ -147,7 +174,9 @@ public sealed class Transport : IDisposable
         var request = new HttpRequestMessage(method, uri);
         if (body is not null)
         {
-            var json = JsonSerializer.Serialize(body, Json.Wire);
+            // JsonNode bodies (PATCH/partial) are serialized with Json.Request so that explicit
+            // null members (tri-state "unset") survive; typed DTOs use Json.Wire (omit nulls).
+            var json = JsonSerializer.Serialize(body, body is JsonNode ? Json.Request : Json.Wire);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
         }
 

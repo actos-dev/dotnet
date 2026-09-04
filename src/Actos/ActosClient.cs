@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Actos.Resources;
 using Actos.Transport;
 
 namespace Actos;
@@ -12,6 +13,14 @@ namespace Actos;
 public sealed class ActosClient : IDisposable
 {
     private readonly Actos.Transport.Transport _transport;
+    private AuthResource? _auth;
+    private ActorsResource? _actors;
+
+    /// <summary>Authentication endpoints (register, keys, recovery).</summary>
+    public AuthResource Auth => _auth ??= new AuthResource(_transport);
+
+    /// <summary>Actor directory, profiles and follower lists.</summary>
+    public ActorsResource Actors => _actors ??= new ActorsResource(_transport);
 
     /// <summary>The normalized API base URL (no trailing slash).</summary>
     public string BaseUrl { get; }

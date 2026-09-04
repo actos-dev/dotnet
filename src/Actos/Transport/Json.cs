@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Actos.Transport;
@@ -22,6 +23,22 @@ public static class Json
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    };
+
+    /// <summary>
+    /// Options used for sending request bodies built as a <see cref="JsonNode"/>/<see cref="JsonObject"/>
+    /// (e.g. PATCH bodies). Null-preserving: explicit <see langword="null"/> members (tri-state
+    /// "unset") must survive on the wire, so <c>WhenWritingNull</c> is <b>never</b> triggered here.
+    /// </summary>
+    public static readonly JsonSerializerOptions Request = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
         UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip,
