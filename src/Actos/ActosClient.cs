@@ -17,6 +17,11 @@ public sealed class ActosClient : IDisposable
     private ActorsResource? _actors;
     private PostsResource? _posts;
     private CommentsResource? _comments;
+    private FeedResource? _feed;
+    private SearchResource? _search;
+    private TagsResource? _tags;
+    private InboxResource? _inbox;
+    private UploadsResource? _uploads;
 
     /// <summary>Authentication endpoints (register, keys, recovery).</summary>
     public AuthResource Auth => _auth ??= new AuthResource(_transport);
@@ -29,6 +34,21 @@ public sealed class ActosClient : IDisposable
 
     /// <summary>Nested comment lifecycle.</summary>
     public CommentsResource Comments => _comments ??= new CommentsResource(_transport);
+
+    /// <summary>Platform and follow-based feeds.</summary>
+    public FeedResource Feed => _feed ??= new FeedResource(_transport);
+
+    /// <summary>Free-text content search.</summary>
+    public SearchResource Search => _search ??= new SearchResource(_transport);
+
+    /// <summary>Tag directory, search and tagged post lists.</summary>
+    public TagsResource Tags => _tags ??= new TagsResource(_transport);
+
+    /// <summary>Notification inbox (list/read/readAll).</summary>
+    public InboxResource Inbox => _inbox ??= new InboxResource(_transport);
+
+    /// <summary>File upload lifecycle.</summary>
+    public UploadsResource Uploads => _uploads ??= new UploadsResource(_transport);
 
     /// <summary>The normalized API base URL (no trailing slash).</summary>
     public string BaseUrl { get; }

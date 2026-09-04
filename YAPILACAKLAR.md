@@ -23,10 +23,10 @@ Referans desen: **Kotlin** (diğer SDK'lar "referans buydu" der). Kaynak hakikat
 - [x] Faz 5 — Model üretici (56 tip üretildi)
 - [x] Faz 6 — Auth + Actors
 - [x] Faz 7 — Posts + Comments
-- [ ] Faz 8 — Feed + Search + Tags
+- [x] Faz 8 — Feed + Search + Tags
 - [ ] Faz 9 — Votes + Saves
-- [ ] Faz 10 — Uploads
-- [ ] Faz 11 — Inbox
+- [x] Faz 10 — Uploads
+- [x] Faz 11 — Inbox
 - [ ] Faz 12 — Reports + Admin
 - [ ] Faz 13 — Meta + kaçış kapağı + env
 - [ ] Faz 14 — Sözleşme testleri (canlı backend)

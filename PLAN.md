@@ -269,10 +269,10 @@ dotnet/
   avatar)/deleteMe/followers/following. Birim test.
 - **[x] Faz 7 — Posts + Comments.** create(auto idempotency)/get/update/delete; create/list(nested,
   body_html)/get/update/delete. 410-404 ayrımını test et.
-- **[ ] Faz 8 — Feed + Search + Tags.**
+- **[x] Faz 8 — Feed + Search + Tags.**
 - **[ ] Faz 9 — Votes + Saves.**
-- **[ ] Faz 10 — Uploads.** multipart (MemoryStream, FileInfo/Stream), delete; kota/limit test.
-- **[ ] Faz 11 — Inbox.** list/read/readAll; unread_count=toplam; watch=yoklama.
+- **[x] Faz 10 — Uploads.** multipart (MemoryStream, FileInfo/Stream), delete; kota/limit test.
+- **[x] Faz 11 — Inbox.** list/read/readAll; unread_count=toplam; watch=yoklama.
 - **[ ] Faz 12 — Reports + Admin.**
 - **[ ] Faz 13 — Meta + kaçış kapağı `RequestAsync` + `RateLimit` property + env okuma.**
 - **[ ] Faz 14 — Sözleşme testlerini canlı backend'e karşı (contract).** docker compose up + 3100.

@@ -2,7 +2,7 @@ namespace Actos.Transport;
 
 /// <summary>
 /// Builds the pre-encoded <c>query</c> dictionary consumed by
-/// <see cref="Transport.RequestAsync{TResponse}"/>. <see langword="null"/> values are omitted
+/// <see cref="Transport.RequestAsync{TResponse}(System.Net.Http.HttpMethod, string, System.Collections.Generic.IReadOnlyDictionary{string, string}?, object?, string?, System.Threading.CancellationToken)"/>. <see langword="null"/> values are omitted
 /// (so an optional query parameter left unset simply does not appear on the URL).
 /// </summary>
 public static class QueryParams

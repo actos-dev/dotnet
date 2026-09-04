@@ -103,6 +103,34 @@ public sealed class Transport : IDisposable
     }
 
     /// <summary>
+    /// Sends a request whose body is already fully formed as an <see cref="HttpContent"/> (for example
+    /// a <c>multipart/form-data</c> payload or a raw stream) and deserializes a successful (2xx)
+    /// response body into <typeparamref name="TResponse"/>. Non-2xx responses throw the appropriate
+    /// typed <see cref="ActosApiException"/>. Unlike the JSON <c>body</c> overload, the content is
+    /// passed through untouched — callers set its own content type (e.g. <c>multipart/form-data</c>).
+    /// </summary>
+    /// <typeparam name="TResponse">The response DTO type.</typeparam>
+    /// <param name="method">The HTTP method.</param>
+    /// <param name="path">The API path, for example <c>/uploads</c>.</param>
+    /// <param name="content">The raw request body content, sent verbatim.</param>
+    /// <param name="query">Pre-encoded query parameters appended to the URL.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    public async Task<TResponse> RequestAsync<TResponse>(
+        HttpMethod method,
+        string path,
+        HttpContent content,
+        IReadOnlyDictionary<string, string>? query = null,
+        CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(method, BuildUri(path, query))
+        {
+            Content = content,
+        };
+        using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
+        return await ReadResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Low-level escape hatch: sends an arbitrary <see cref="HttpRequestMessage"/> and returns the raw
     /// <see cref="HttpResponseMessage"/> without throwing on non-2xx statuses. Credentials, <c>User-Agent</c>
     /// and <c>Accept</c> headers are applied if the caller has not already set them.
