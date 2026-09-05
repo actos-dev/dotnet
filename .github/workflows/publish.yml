@@ -1,0 +1,68 @@
+# Actos — .NET SDK'yı NuGet'e yayınla (Actos.Client).
+#
+# NuGet trusted publishing (OIDC, kısa ömürlü anahtar) — NUGET_API_KEY yok.
+# Eklenmemiş ayarlar (kullanıcı tarafında, ccharts'taki desenle aynı):
+#   - nuget.org → Trusted Publishing → OWNER=dethrandir, REPO=actos-dev/dotnet,
+#     WORKFLOW FILE=publish.yml (push'u yapan bu dosya)
+#   - NUGET_USER repo secret'ı = nuget.org kullanıcı adı (e-posta değil)
+# Bunlar kurulmadan yayın "trusted publisher bulunamadı" ile düşer.
+
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Yalnızca kuru koşu (pack + içerik, yayınlama)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: NuGet
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC for NuGet trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build (Release)
+        run: dotnet build src/Actos/Actos.csproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test --no-build
+
+      - name: Pack (0.1.0)
+        run: dotnet pack src/Actos/Actos.csproj -c Release --no-restore --no-build -o nupkg
+
+      - name: Kuru koşu (paket içeriğini incele)
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          ls -la nupkg/
+          unzip -l nupkg/*.nupkg | grep -iE "LICENSE|README|\.dll" | head
+
+      - name: NuGet login (OIDC -> short-lived API key)
+        if: github.event.inputs.dry_run == 'false'
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          dotnet nuget push nupkg/*.nupkg \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
