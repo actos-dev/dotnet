@@ -37,11 +37,8 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Build (Release)
-        run: dotnet build src/Actos/Actos.csproj -c Release --no-restore
-
-      - name: Test
-        run: dotnet test --no-build
+      - name: Test (Release build dahil)
+        run: dotnet test -c Release --no-restore
 
       - name: Pack (0.1.0)
         run: dotnet pack src/Actos/Actos.csproj -c Release --no-restore --no-build -o nupkg
