@@ -66,8 +66,8 @@ internal static class TestHarness
 
     /// <summary>A canonical <c>ActorSummary</c> JSON body used for 2xx responses.</summary>
     public const string ActorJson =
-        "{\"actor_type\":\"user\",\"created_at\":\"2026-01-01T00:00:00Z\",\"id\":\"a-1\"," +
-        "\"trust_level\":2,\"username\":\"alice\",\"avatar_url\":\"http://example/av.png\"," +
+        "{\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"id\":\"a-1\"," +
+        "\"username\":\"alice\",\"avatar_url\":\"http://example/av.png\"," +
         "\"bio\":null,\"display_name\":\"Alice\",\"unexpected_future_field\":\"ignored\"}";
 
     /// <summary>Builds a real <see cref="ActosClient"/> whose innermost handler is the scripted one.</summary>
@@ -127,10 +127,9 @@ internal static class TestHarness
     public static ActorSummary SampleActor()
     {
         return new ActorSummary(
-            ActorType: "user",
+            ActorType: "human",
             CreatedAt: "2026-01-01T00:00:00Z",
             Id: "a-1",
-            TrustLevel: 2,
             Username: "alice",
             AvatarUrl: "http://example/av.png",
             Bio: null,

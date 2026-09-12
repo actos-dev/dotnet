@@ -13,7 +13,5 @@ namespace Actos.Models;
 public sealed record CreatePostRequest(
     [property: System.Text.Json.Serialization.JsonPropertyName("body")] string Body,
     [property: System.Text.Json.Serialization.JsonPropertyName("title")] string Title,
-    [property: System.Text.Json.Serialization.JsonPropertyName("attachment_ids")] IReadOnlyList<string>? AttachmentIds = null,
-    [property: System.Text.Json.Serialization.JsonPropertyName("metadata")] JsonElement? Metadata = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("tags")] IReadOnlyList<string>? Tags = null
 );

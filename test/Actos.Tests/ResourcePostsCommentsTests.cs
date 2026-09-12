@@ -1,24 +1,27 @@
+using System.Text;
 using System.Text.Json;
+using Actos.Transport;
+using Actos.Utils;
 
 namespace Actos.Tests;
 
 /// <summary>
-/// Exercises the Posts and Comments resources: create (auto idempotency), fields query,
-/// tri-state PATCH, comment nesting and the body_html flag.
+/// Exercises the Posts and Comments resources: create (auto idempotency), the multipart path
+/// when files are attached, fields query, tri-state PATCH, comment nesting and the body_html flag.
 /// </summary>
 public class ResourcePostsCommentsTests
 {
     private const string ContentJson =
         "{\"id\":\"c-1\",\"content_type\":\"post\",\"author\":{\"id\":\"a-1\",\"username\":\"alice\"," +
-        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"trust_level\":0}," +
-        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\",\"metadata\":{}," +
+        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
+        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
         "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false}";
 
     private const string ThreadJson =
         "{\"comments\":[{\"id\":\"c-2\",\"content_type\":\"comment\",\"author\":{\"id\":\"a-1\"," +
-        "\"username\":\"alice\",\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"trust_level\":0}," +
-        "\"author_deleted\":false,\"body\":\"reply\",\"body_format\":\"markdown\",\"metadata\":{}," +
+        "\"username\":\"alice\",\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
+        "\"author_deleted\":false,\"body\":\"reply\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
         "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false,\"replies\":[]}],\"next_cursor\":\"c-cur\"}";
 
@@ -39,7 +42,50 @@ public class ResourcePostsCommentsTests
         using var doc = JsonDocument.Parse(body);
         Assert.Equal("Hello", doc.RootElement.GetProperty("title").GetString());
         Assert.Equal("net", doc.RootElement.GetProperty("tags")[0].GetString()); // snake_case tags
-        Assert.False(doc.RootElement.TryGetProperty("attachmentIds", out _));
+        Assert.StartsWith("application/json", handler.LastRequest.Content!.Headers.ContentType!.MediaType);
+    }
+
+    [Fact]
+    public async Task CreatePost_With_Files_Sends_Multipart_Payload_And_Files_Parts()
+    {
+        var handler = new ScriptedHttpMessageHandler();
+        handler.Enqueue(TestHarness.JsonResponse(201, ContentJson));
+        using var client = TestHarness.BuildClient(handler);
+
+        var files = new[]
+        {
+            FileUpload.FromBytes(Encoding.UTF8.GetBytes("one"), "one.png", "image/png"),
+            FileUpload.FromBytes(Encoding.UTF8.GetBytes("two"), "two.png", "image/png"),
+        };
+
+        var post = await client.Posts.CreateAsync("Hello", "World", files: files);
+
+        Assert.Equal("c-1", post.Id);
+        Assert.StartsWith("multipart/form-data; boundary=", handler.LastRequest!.Content!.Headers.ContentType!.ToString());
+
+        // An Idempotency-Key is still generated on the multipart path.
+        var key = handler.LastRequest.Headers.GetValues("Idempotency-Key").Single();
+        Assert.False(string.IsNullOrWhiteSpace(key));
+
+        var body = handler.LastRequestBody!;
+        Assert.Contains("name=payload", body);
+        Assert.Contains("\"title\":\"Hello\"", body); // the JSON payload part carries the same body
+        Assert.Contains("name=files", body);
+        Assert.Contains("filename=one.png", body);
+        Assert.Contains("filename=two.png", body);
+        Assert.Contains("one", body);
+        Assert.Contains("two", body);
+    }
+
+    [Fact]
+    public void CreatePost_With_Too_Many_Files_Throws()
+    {
+        var files = Enumerable.Range(0, MultipartRequest.MaxFiles + 1)
+            .Select(i => FileUpload.FromBytes(Encoding.UTF8.GetBytes("x"), $"{i}.png", "image/png"))
+            .ToArray();
+
+        Assert.Throws<ArgumentException>(
+            () => MultipartRequest.BuildPayloadWithFiles(new { title = "t", body = "b" }, files));
     }
 
     [Fact]
@@ -83,6 +129,27 @@ public class ResourcePostsCommentsTests
         var body = handler.LastRequestBody!;
         using var doc = JsonDocument.Parse(body);
         Assert.Equal("c-5", doc.RootElement.GetProperty("parent_id").GetString()); // snake_case wire
+    }
+
+    [Fact]
+    public async Task CreateComment_With_Files_Sends_Multipart_Payload_And_Files_Parts()
+    {
+        var handler = new ScriptedHttpMessageHandler();
+        handler.Enqueue(TestHarness.JsonResponse(201, ContentJson));
+        using var client = TestHarness.BuildClient(handler);
+
+        var files = new[] { FileUpload.FromBytes(Encoding.UTF8.GetBytes("img"), "img.png", "image/png") };
+
+        var comment = await client.Comments.CreateAsync("c-1", "an answer", files: files);
+
+        Assert.Equal("c-1", comment.Id);
+        Assert.StartsWith("multipart/form-data; boundary=", handler.LastRequest!.Content!.Headers.ContentType!.ToString());
+
+        var body = handler.LastRequestBody!;
+        Assert.Contains("name=payload", body);
+        Assert.Contains("\"body\":\"an answer\"", body);
+        Assert.Contains("name=files", body);
+        Assert.Contains("filename=img.png", body);
     }
 
     [Fact]

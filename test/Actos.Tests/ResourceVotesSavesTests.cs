@@ -19,15 +19,15 @@ public class ResourceVotesSavesTests
 
     private const string ContentJson =
         "{\"id\":\"c-1\",\"content_type\":\"post\",\"author\":{\"id\":\"a-1\",\"username\":\"alice\"," +
-        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"trust_level\":0}," +
-        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\",\"metadata\":{}," +
+        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
+        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
         "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false}";
 
     private const string SavesJson =
         "{\"saves\":[{\"id\":\"c-1\",\"content_type\":\"post\",\"author\":{\"id\":\"a-1\",\"username\":\"alice\"," +
-        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"trust_level\":0}," +
-        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\",\"metadata\":{}," +
+        "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
+        "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
         "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false}],\"next_cursor\":\"c-cur\"}";
 

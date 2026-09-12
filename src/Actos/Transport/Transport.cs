@@ -111,21 +111,28 @@ public sealed class Transport : IDisposable
     /// </summary>
     /// <typeparam name="TResponse">The response DTO type.</typeparam>
     /// <param name="method">The HTTP method.</param>
-    /// <param name="path">The API path, for example <c>/uploads</c>.</param>
+    /// <param name="path">The API path, for example <c>/posts</c> or <c>/actors/me/avatar</c>.</param>
     /// <param name="content">The raw request body content, sent verbatim.</param>
     /// <param name="query">Pre-encoded query parameters appended to the URL.</param>
+    /// <param name="idempotencyKey">An <c>Idempotency-Key</c> header value, allowing safe retries of mutating requests.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     public async Task<TResponse> RequestAsync<TResponse>(
         HttpMethod method,
         string path,
         HttpContent content,
         IReadOnlyDictionary<string, string>? query = null,
+        string? idempotencyKey = null,
         CancellationToken cancellationToken = default)
     {
         using var request = new HttpRequestMessage(method, BuildUri(path, query))
         {
             Content = content,
         };
+        if (!string.IsNullOrEmpty(idempotencyKey))
+        {
+            request.Headers.TryAddWithoutValidation(HeaderIdempotencyKey, idempotencyKey);
+        }
+
         using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
         return await ReadResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
     }

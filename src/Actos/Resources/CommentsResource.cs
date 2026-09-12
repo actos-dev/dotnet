@@ -19,26 +19,42 @@ public sealed class CommentsResource
     /// <summary>
     /// Creates a comment on a post, or a reply when <paramref name="parentId"/> is set. An
     /// <c>Idempotency-Key</c> is generated automatically to prevent duplicate comments on retry.
+    /// When <paramref name="files"/> is given the request goes out as <c>multipart/form-data</c>
+    /// (a <c>payload</c> part plus up to <see cref="MultipartRequest.MaxFiles"/> <c>files</c> parts);
+    /// otherwise the body stays plain <c>application/json</c>.
     /// </summary>
     /// <param name="postId">The parent post id (<c>c_...</c>).</param>
     /// <param name="body">Comment body (markdown/HTML).</param>
     /// <param name="parentId">Optional parent comment id to make this a nested reply.</param>
-    /// <param name="attachmentIds">Optional uploaded attachment ids.</param>
-    public Task<ContentSummary> CreateAsync(
+    /// <param name="files">Optional images to attach (up to <see cref="MultipartRequest.MaxFiles"/>).</param>
+    public async Task<ContentSummary> CreateAsync(
         string postId,
         string body,
         string? parentId = null,
-        IReadOnlyCollection<string>? attachmentIds = null,
+        IReadOnlyCollection<FileUpload>? files = null,
         CancellationToken cancellationToken = default)
-        => _transport.RequestAsync<ContentSummary>(
+    {
+        var payload = new CreateCommentRequest(Body: body, ParentId: parentId);
+        var key = Guid.NewGuid().ToString();
+
+        if (files is not { Count: > 0 })
+        {
+            return await _transport.RequestAsync<ContentSummary>(
+                HttpMethod.Post,
+                $"/posts/{postId}/comments",
+                body: payload,
+                idempotencyKey: key,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        using var form = MultipartRequest.BuildPayloadWithFiles(payload, files);
+        return await _transport.RequestAsync<ContentSummary>(
             HttpMethod.Post,
             $"/posts/{postId}/comments",
-            body: new CreateCommentRequest(
-                Body: body,
-                AttachmentIds: attachmentIds?.ToList(),
-                ParentId: parentId),
-            idempotencyKey: Guid.NewGuid().ToString(),
-            cancellationToken: cancellationToken);
+            form,
+            idempotencyKey: key,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Lists a post's comment tree (one page; each node carries nested <c>Replies</c>). The

@@ -9,8 +9,8 @@ public class Basics
         string[] expectedResources =
         {
             "Auth", "Actors", "Posts", "Comments", "Inbox", "Feed",
-            "Search", "Tags", "Votes", "Saves", "Uploads", "Reports", "Admin", "Meta",
+            "Search", "Tags", "Votes", "Saves", "Reports", "Admin", "Meta",
         };
-        Assert.Equal(14, expectedResources.Length);
+        Assert.Equal(13, expectedResources.Length);
     }
 }

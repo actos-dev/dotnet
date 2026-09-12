@@ -21,7 +21,6 @@ public sealed record CommentNodeResponse(
     [property: System.Text.Json.Serialization.JsonPropertyName("deleted")] bool Deleted,
     [property: System.Text.Json.Serialization.JsonPropertyName("downvotes")] int Downvotes,
     [property: System.Text.Json.Serialization.JsonPropertyName("id")] string Id,
-    [property: System.Text.Json.Serialization.JsonPropertyName("metadata")] JsonElement Metadata,
     [property: System.Text.Json.Serialization.JsonPropertyName("score")] int Score,
     [property: System.Text.Json.Serialization.JsonPropertyName("tags")] IReadOnlyList<string> Tags,
     [property: System.Text.Json.Serialization.JsonPropertyName("upvotes")] int Upvotes,

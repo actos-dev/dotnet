@@ -14,14 +14,14 @@ public class ForwardCompatTests
     public void ActorSummary_Ignores_Unknown_Keys_On_Deserialize()
     {
         const string json =
-            "{\"actor_type\":\"user\",\"created_at\":\"2026-01-01T00:00:00Z\",\"id\":\"a-1\"," +
-            "\"trust_level\":1,\"username\":\"carol\"," +
+            "{\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\",\"id\":\"a-1\"," +
+            "\"username\":\"carol\"," +
             "\"future_badge\":\"gold\",\"future_metrics\":{\"karma\":42},\"future_flags\":[true,false]}";
 
         var actor = JsonSerializer.Deserialize<ActorSummary>(json, Json.Wire);
 
         Assert.NotNull(actor);
-        Assert.Equal("user", actor.ActorType);
+        Assert.Equal("human", actor.ActorType);
         Assert.Equal("carol", actor.Username);
     }
 
@@ -31,10 +31,9 @@ public class ForwardCompatTests
         // Wire options tolerate trailing commas and C-style comments — forward-compatible lenience.
         const string json = """
             {
-              "actor_type": "user",
+              "actor_type": "human",
               "created_at": "2026-01-01T00:00:00Z",
               "id": "a-2",
-              "trust_level": 1,
               "username": "dave", // a trailing comment
               "unknown_thing": 123,
             }
@@ -49,14 +48,13 @@ public class ForwardCompatTests
     [Fact]
     public void Wire_Reads_Numbers_From_Strings_When_Expected_As_Numbers()
     {
-        // NumberHandling.AllowReadingFromString lets a server emit "2" for an int field.
+        // NumberHandling.AllowReadingFromString lets a server emit "12" for an int field.
         const string json =
-            "{\"actor_type\":\"user\",\"created_at\":\"2026-01-01T00:00:00Z\",\"id\":\"a-3\"," +
-            "\"trust_level\":\"2\",\"username\":\"erin\"}";
+            "{\"created_at\":\"2026-01-01T00:00:00Z\",\"name\":\"net\",\"post_count\":\"12\"}";
 
-        var actor = JsonSerializer.Deserialize<ActorSummary>(json, Json.Wire);
+        var tag = JsonSerializer.Deserialize<TagSummary>(json, Json.Wire);
 
-        Assert.NotNull(actor);
-        Assert.Equal(2, actor.TrustLevel);
+        Assert.NotNull(tag);
+        Assert.Equal(12, tag.PostCount);
     }
 }

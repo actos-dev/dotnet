@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Actos.Models;
 using Actos.Pagination;
 using Actos.Transport;
@@ -20,32 +19,44 @@ public sealed class PostsResource
     /// <summary>
     /// Creates a post. An <c>Idempotency-Key</c> is generated automatically (UUID) so a timed-out
     /// retry can never create a duplicate; pass <paramref name="idempotencyKey"/> to set your own.
+    /// When <paramref name="files"/> is given the request goes out as <c>multipart/form-data</c>
+    /// (a <c>payload</c> part plus up to <see cref="MultipartRequest.MaxFiles"/> <c>files</c> parts);
+    /// otherwise the body stays plain <c>application/json</c>.
     /// </summary>
     /// <param name="title">Post title.</param>
     /// <param name="body">Markdown/HTML body.</param>
     /// <param name="tags">Optional tag names.</param>
-    /// <param name="attachmentIds">Optional uploaded attachment ids to attach.</param>
-    /// <param name="metadata">Optional free-form metadata passed through untouched.</param>
+    /// <param name="files">Optional images to attach (up to <see cref="MultipartRequest.MaxFiles"/>).</param>
     /// <param name="idempotencyKey">Override for the automatic idempotency key.</param>
-    public Task<ContentSummary> CreateAsync(
+    public async Task<ContentSummary> CreateAsync(
         string title,
         string body,
         IReadOnlyCollection<string>? tags = null,
-        IReadOnlyCollection<string>? attachmentIds = null,
-        JsonElement? metadata = null,
+        IReadOnlyCollection<FileUpload>? files = null,
         string? idempotencyKey = null,
         CancellationToken cancellationToken = default)
-        => _transport.RequestAsync<ContentSummary>(
+    {
+        var payload = new CreatePostRequest(Body: body, Title: title, Tags: tags?.ToList());
+        var key = idempotencyKey ?? Guid.NewGuid().ToString();
+
+        if (files is not { Count: > 0 })
+        {
+            return await _transport.RequestAsync<ContentSummary>(
+                HttpMethod.Post,
+                "/posts",
+                body: payload,
+                idempotencyKey: key,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        using var form = MultipartRequest.BuildPayloadWithFiles(payload, files);
+        return await _transport.RequestAsync<ContentSummary>(
             HttpMethod.Post,
             "/posts",
-            body: new CreatePostRequest(
-                Body: body,
-                Title: title,
-                AttachmentIds: attachmentIds?.ToList(),
-                Metadata: metadata,
-                Tags: tags?.ToList()),
-            idempotencyKey: idempotencyKey ?? Guid.NewGuid().ToString(),
-            cancellationToken: cancellationToken);
+            form,
+            idempotencyKey: key,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>Fetches a single post.</summary>
     /// <param name="id">Post id (<c>c_...</c>).</param>

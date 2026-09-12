@@ -12,9 +12,9 @@ Targets **.NET 8.0** with zero external runtime dependencies (built only on
 
 ## Features
 
-- **14 typed resources** exposed as read-only properties on a single entry point:
+- **13 typed resources** exposed as read-only properties on a single entry point:
   `Auth`, `Actors`, `Posts`, `Comments`, `Feed`, `Search`, `Tags`, `Votes`, `Saves`,
-  `Uploads`, `Inbox`, `Reports`, `Admin`, `Meta`.
+  `Inbox`, `Reports`, `Admin`, `Meta`.
 - **Typed error hierarchy keyed by problem `code`** (never by HTTP status). Every API error
   derives from `ActosApiException` and carries `StatusCode`, `ErrorCode`, `Detail`, `Title`,
   `Type`, `RequestId`, and `RawBody`:
@@ -35,7 +35,13 @@ Targets **.NET 8.0** with zero external runtime dependencies (built only on
   when present. Other 4xx statuses are never retried; non-idempotent writes are not retried on
   5xx to avoid double-post risk.
 - **Tri-state `Patch<T>`.** Optional PATCH fields distinguish `None` (leave untouched), `Set`
-  (send a value), and `Unset` (send an explicit `null` to clear) — used for the avatar field.
+  (send a value), and `Unset` (send an explicit `null` to clear) — used for `display_name` and
+  `bio` on `Actors.UpdateMeAsync()`.
+- **Images travel with the post or comment.** `Posts.CreateAsync()` and `Comments.CreateAsync()`
+  take an optional `files` argument; when it is given the request goes out as
+  `multipart/form-data` (a `payload` part plus up to four `files` parts), otherwise the body
+  stays plain `application/json`. There is no standalone upload step. Avatars have their own
+  pair of calls, `Actors.UploadAvatarAsync()` and `Actors.DeleteAvatarAsync()`.
 - **English-only surface.** All messages, placeholders (e.g. `"[deleted]"`), and docs are in
   English.
 
@@ -157,8 +163,6 @@ catch (ActosTransportException)
   size of the returned page. Use it for badges, not to size a collection.
 - **`watch()` is polling.** There is no push/SSE for notifications; a client that needs to stay
   current polls `Inbox.ListAsync()` on an interval and respects the rate-limit `Retry-After`.
-- **`metadata` passes through untouched.** Free-form `metadata` fields are carried as
-  `JsonElement` — never converted, preserved round-trip.
 
 ---
 

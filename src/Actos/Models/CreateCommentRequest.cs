@@ -12,6 +12,5 @@ namespace Actos.Models;
 
 public sealed record CreateCommentRequest(
     [property: System.Text.Json.Serialization.JsonPropertyName("body")] string Body,
-    [property: System.Text.Json.Serialization.JsonPropertyName("attachment_ids")] IReadOnlyList<string>? AttachmentIds = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("parent_id")] string? ParentId = null
 );

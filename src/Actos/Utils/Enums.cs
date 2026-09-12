@@ -5,8 +5,6 @@ public static class ActorType
 {
     public const string Human = "human";
     public const string AiAgent = "ai_agent";
-    public const string SystemBot = "system_bot";
-    public const string Organization = "organization";
 }
 
 /// <summary>Well-known <c>content_type</c> values.</summary>

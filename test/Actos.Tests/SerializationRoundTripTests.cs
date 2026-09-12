@@ -21,7 +21,6 @@ public class SerializationRoundTripTests
         Assert.Contains("\"avatar_url\"", json);
         Assert.Contains("\"display_name\"", json);
         Assert.Contains("\"created_at\"", json);
-        Assert.Contains("\"trust_level\"", json);
     }
 
     [Fact]
@@ -39,11 +38,11 @@ public class SerializationRoundTripTests
     }
 
     [Fact]
-    public void ContentSummary_RoundTrips_FreeFormMetadata_AsUntouchedJsonElement()
+    public void ContentSummary_RoundTrips_NullVsEmpty_Attachments()
     {
-        using var metadataDocument = JsonDocument.Parse(
-            "{\"x\":1,\"nested\":{\"y\":\"value\"},\"list\":[1,2,3]}");
-        var summary = new ContentSummary(
+        // None ("attachments were not loaded") and Some([]) ("no attachments") are distinct —
+        // collapsing them would lose information the server deliberately keeps apart.
+        var withoutAttachments = new ContentSummary(
             Author: TestHarness.SampleActor(),
             AuthorDeleted: false,
             Body: "Hello world",
@@ -54,35 +53,36 @@ public class SerializationRoundTripTests
             Deleted: false,
             Downvotes: 0,
             Id: "c-1",
-            Metadata: metadataDocument.RootElement,
             Score: 5,
             Tags: new[] { "a", "b" },
-            Upvotes: 5);
+            Upvotes: 5,
+            Attachments: null);
 
-        var json = JsonSerializer.Serialize(summary, Json.Wire);
+        var withEmptyAttachments = withoutAttachments with { Attachments = Array.Empty<UploadResponse>() };
 
-        Assert.Contains("\"metadata\"", json);
+        var roundTrippedNull = JsonSerializer.Deserialize<ContentSummary>(
+            JsonSerializer.Serialize(withoutAttachments, Json.Wire), Json.Wire);
+        var roundTrippedEmpty = JsonSerializer.Deserialize<ContentSummary>(
+            JsonSerializer.Serialize(withEmptyAttachments, Json.Wire), Json.Wire);
 
-        var roundTripped = JsonSerializer.Deserialize<ContentSummary>(json, Json.Wire);
-
-        Assert.NotNull(roundTripped);
-        Assert.Equal(1, roundTripped.Metadata.GetProperty("x").GetInt32());
-        Assert.Equal("value", roundTripped.Metadata.GetProperty("nested").GetProperty("y").GetString());
-        Assert.Equal(3, roundTripped.Metadata.GetProperty("list").GetArrayLength());
+        Assert.NotNull(roundTrippedNull);
+        Assert.NotNull(roundTrippedEmpty);
+        Assert.Null(roundTrippedNull.Attachments);
+        Assert.NotNull(roundTrippedEmpty.Attachments);
+        Assert.Empty(roundTrippedEmpty.Attachments!);
     }
 
     [Fact]
     public void Wire_Reads_SnakeCase_With_CaseInsensitivity()
     {
         // The wire options are case-insensitive on read; mixed-case keys still bind.
-        const string mixedCase = "{\"Actor_Type\":\"user\",\"Created_At\":\"2026-01-01T00:00:00Z\"," +
-            "\"ID\":\"a-9\",\"Trust_Level\":1,\"USERNAME\":\"bob\"}";
+        const string mixedCase = "{\"Actor_Type\":\"human\",\"Created_At\":\"2026-01-01T00:00:00Z\"," +
+            "\"ID\":\"a-9\",\"USERNAME\":\"bob\"}";
 
         var actor = JsonSerializer.Deserialize<ActorSummary>(mixedCase, Json.Wire);
 
         Assert.NotNull(actor);
-        Assert.Equal("user", actor.ActorType);
+        Assert.Equal("human", actor.ActorType);
         Assert.Equal("bob", actor.Username);
-        Assert.Equal(1, actor.TrustLevel);
     }
 }

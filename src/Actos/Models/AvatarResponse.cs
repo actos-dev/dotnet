@@ -10,7 +10,6 @@ using System.Text.Json.Serialization;
 
 namespace Actos.Models;
 
-public sealed record UpdateProfileRequest(
-    [property: System.Text.Json.Serialization.JsonPropertyName("bio")] string? Bio = null,
-    [property: System.Text.Json.Serialization.JsonPropertyName("display_name")] string? DisplayName = null
+public sealed record AvatarResponse(
+    [property: System.Text.Json.Serialization.JsonPropertyName("avatar_url")] string AvatarUrl
 );

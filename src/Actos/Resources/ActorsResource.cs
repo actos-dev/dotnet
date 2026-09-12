@@ -52,20 +52,19 @@ public sealed class ActorsResource
             cancellationToken: cancellationToken);
 
     /// <summary>
-    /// Updates the current actor's profile. Each of <paramref name="displayName"/>, <paramref name="bio"/>
-    /// and <paramref name="avatar"/> is tri-state: <see cref="Patch{T}.None"/> to leave untouched,
-    /// <see cref="Patch{T}.Set"/> to assign, <see cref="Patch{T}.Unset"/> to clear with an explicit null.
+    /// Updates the current actor's profile. Each of <paramref name="displayName"/> and <paramref name="bio"/>
+    /// is tri-state: <see cref="Patch{T}.None"/> to leave untouched, <see cref="Patch{T}.Set"/> to assign,
+    /// <see cref="Patch{T}.Unset"/> to clear with an explicit null. The avatar is not part of this call —
+    /// use <see cref="UploadAvatarAsync"/> and <see cref="DeleteAvatarAsync"/> instead.
     /// </summary>
     public Task<UpdateProfileResponse> UpdateMeAsync(
         Patch<string> displayName = default,
         Patch<string> bio = default,
-        Patch<string> avatar = default,
         CancellationToken cancellationToken = default)
     {
         var body = RequestBody.New()
             .Set("display_name", displayName)
-            .Set("bio", bio)
-            .Set("avatar", avatar);
+            .Set("bio", bio);
         return _transport.RequestAsync<UpdateProfileResponse>(
             HttpMethod.Patch,
             "/actors/me",
@@ -73,6 +72,27 @@ public sealed class ActorsResource
             body: body,
             cancellationToken: cancellationToken);
     }
+
+    /// <summary>
+    /// Uploads (or replaces) the current actor's avatar as <c>multipart/form-data</c> under the
+    /// field name <c>file</c>. Replaces and deletes any previously stored avatar.
+    /// </summary>
+    public async Task<AvatarResponse> UploadAvatarAsync(FileUpload file, CancellationToken cancellationToken = default)
+    {
+        using var form = new MultipartFormDataContent
+        {
+            { file.ToHttpContent(), "file", file.FileName },
+        };
+        return await _transport.RequestAsync<AvatarResponse>(
+            HttpMethod.Post,
+            "/actors/me/avatar",
+            form,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Deletes the current actor's avatar. A no-op (still 204) if none is set.</summary>
+    public Task DeleteAvatarAsync(CancellationToken cancellationToken = default)
+        => _transport.RequestNoContentAsync(HttpMethod.Delete, "/actors/me/avatar", cancellationToken: cancellationToken);
 
     /// <summary>Permanently deletes the current account; a recovery code is required as proof.</summary>
     public Task DeleteMeAsync(string recoveryCode, CancellationToken cancellationToken = default)

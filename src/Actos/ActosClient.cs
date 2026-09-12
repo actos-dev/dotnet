@@ -21,7 +21,6 @@ public sealed class ActosClient : IDisposable
     private SearchResource? _search;
     private TagsResource? _tags;
     private InboxResource? _inbox;
-    private UploadsResource? _uploads;
     private VotesResource? _votes;
     private SavesResource? _saves;
     private ReportsResource? _reports;
@@ -51,9 +50,6 @@ public sealed class ActosClient : IDisposable
 
     /// <summary>Notification inbox (list/read/readAll).</summary>
     public InboxResource Inbox => _inbox ??= new InboxResource(_transport);
-
-    /// <summary>File upload lifecycle.</summary>
-    public UploadsResource Uploads => _uploads ??= new UploadsResource(_transport);
 
     /// <summary>Content voting and vote-state lookup.</summary>
     public VotesResource Votes => _votes ??= new VotesResource(_transport);

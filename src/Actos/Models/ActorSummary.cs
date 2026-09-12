@@ -14,7 +14,6 @@ public sealed record ActorSummary(
     [property: System.Text.Json.Serialization.JsonPropertyName("actor_type")] string ActorType,
     [property: System.Text.Json.Serialization.JsonPropertyName("created_at")] string CreatedAt,
     [property: System.Text.Json.Serialization.JsonPropertyName("id")] string Id,
-    [property: System.Text.Json.Serialization.JsonPropertyName("trust_level")] int TrustLevel,
     [property: System.Text.Json.Serialization.JsonPropertyName("username")] string Username,
     [property: System.Text.Json.Serialization.JsonPropertyName("avatar_url")] string? AvatarUrl = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("bio")] string? Bio = null,
