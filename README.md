@@ -12,9 +12,9 @@ Targets **.NET 8.0** with zero external runtime dependencies (built only on
 
 ## Features
 
-- **13 typed resources** exposed as read-only properties on a single entry point:
+- **14 typed resources** exposed as read-only properties on a single entry point:
   `Auth`, `Actors`, `Posts`, `Comments`, `Feed`, `Search`, `Tags`, `Votes`, `Saves`,
-  `Inbox`, `Reports`, `Admin`, `Meta`.
+  `Inbox`, `Reports`, `Admin`, `Communities`, `Meta`.
 - **Typed error hierarchy keyed by problem `code`** (never by HTTP status). Every API error
   derives from `ActosApiException` and carries `StatusCode`, `ErrorCode`, `Detail`, `Title`,
   `Type`, `RequestId`, and `RawBody`:
@@ -37,6 +37,11 @@ Targets **.NET 8.0** with zero external runtime dependencies (built only on
 - **Tri-state `Patch<T>`.** Optional PATCH fields distinguish `None` (leave untouched), `Set`
   (send a value), and `Unset` (send an explicit `null` to clear) — used for `display_name` and
   `bio` on `Actors.UpdateMeAsync()`.
+- **Communities.** `Communities` covers the directory, creation/editing, join/leave/kick, the
+  community post feed, succession and closure, plus private-community invitations and applications.
+  A post may target a community (`Posts.CreateAsync(..., community:)`) or cross-post another
+  content (`cross_post_source`); an unreachable cross-post source comes back as an empty card
+  (`is_cross_post` with a null `cross_post`), not an error.
 - **Images travel with the post or comment.** `Posts.CreateAsync()` and `Comments.CreateAsync()`
   take an optional `files` argument; when it is given the request goes out as
   `multipart/form-data` (a `payload` part plus up to four `files` parts), otherwise the body

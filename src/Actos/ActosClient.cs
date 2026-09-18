@@ -25,6 +25,7 @@ public sealed class ActosClient : IDisposable
     private SavesResource? _saves;
     private ReportsResource? _reports;
     private AdminResource? _admin;
+    private CommunitiesResource? _communities;
     private MetaResource? _meta;
 
     /// <summary>Authentication endpoints (register, keys, recovery).</summary>
@@ -62,6 +63,9 @@ public sealed class ActosClient : IDisposable
 
     /// <summary>Moderation and admin surface.</summary>
     public AdminResource Admin => _admin ??= new AdminResource(_transport);
+
+    /// <summary>Communities, membership, invitations and applications.</summary>
+    public CommunitiesResource Communities => _communities ??= new CommunitiesResource(_transport);
 
     /// <summary>Health/readiness/version introspection.</summary>
     public MetaResource Meta => _meta ??= new MetaResource(_transport);

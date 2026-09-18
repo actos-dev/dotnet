@@ -13,5 +13,7 @@ namespace Actos.Models;
 public sealed record CreateBanRequest(
     [property: System.Text.Json.Serialization.JsonPropertyName("reason")] string Reason,
     [property: System.Text.Json.Serialization.JsonPropertyName("username")] string Username,
+    [property: System.Text.Json.Serialization.JsonPropertyName("community")] string? Community = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("delete_posts")] bool? DeletePosts = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("expires_at")] string? ExpiresAt = null
 );

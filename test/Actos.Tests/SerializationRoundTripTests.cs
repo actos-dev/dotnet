@@ -53,6 +53,7 @@ public class SerializationRoundTripTests
             Deleted: false,
             Downvotes: 0,
             Id: "c-1",
+            IsCrossPost: false,
             Score: 5,
             Tags: new[] { "a", "b" },
             Upvotes: 5,
@@ -70,6 +71,27 @@ public class SerializationRoundTripTests
         Assert.Null(roundTrippedNull.Attachments);
         Assert.NotNull(roundTrippedEmpty.Attachments);
         Assert.Empty(roundTrippedEmpty.Attachments!);
+    }
+
+    [Fact]
+    public void ContentSummary_CrossPost_Tombstone_Keeps_IsCrossPost_True_And_CrossPost_Null()
+    {
+        // is_cross_post=true with a null cross_post is the "unreachable source" tombstone: the
+        // source was deleted or is invisible to this reader, and the two are deliberately
+        // undifferentiated. The flag must survive while the preview stays null.
+        const string json =
+            "{\"id\":\"c-1\",\"content_type\":\"post\",\"author\":" + TestHarness.ActorJson + "," +
+            "\"author_deleted\":false,\"body\":\"\",\"body_format\":\"markdown\",\"score\":0," +
+            "\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
+            "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false,\"is_cross_post\":true," +
+            "\"cross_post\":null}";
+
+        var content = JsonSerializer.Deserialize<ContentSummary>(json, Json.Wire);
+
+        Assert.NotNull(content);
+        Assert.True(content.IsCrossPost);
+        Assert.Null(content.CrossPost);
+        Assert.Null(content.Community);
     }
 
     [Fact]

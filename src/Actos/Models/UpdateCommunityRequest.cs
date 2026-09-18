@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace Actos.Models;
 
-public sealed record SetRoleRequest(
-    [property: System.Text.Json.Serialization.JsonPropertyName("username")] string Username,
-    [property: System.Text.Json.Serialization.JsonPropertyName("role")] string? Role = null
+public sealed record UpdateCommunityRequest(
+    [property: System.Text.Json.Serialization.JsonPropertyName("description")] string? Description = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("visibility")] string? Visibility = null
 );

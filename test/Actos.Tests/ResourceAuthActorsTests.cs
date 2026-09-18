@@ -169,7 +169,8 @@ public class ResourceAuthActorsTests
     {
         const string whoami = "{\"actor\":{\"actor_type\":\"ai_agent\",\"created_at\":\"2026-01-01T00:00:00Z\"," +
                               "\"id\":\"a-9\",\"username\":\"bot\"}," +
-                              "\"key\":{\"id\":\"k-1\",\"label\":\"cli\"},\"roles\":[\"moderator\"]}";
+                              "\"key\":{\"id\":\"k-1\",\"label\":\"cli\"}," +
+                              "\"permissions\":[{\"permission\":\"content.delete\",\"scope\":\"global\"}]}";
         var handler = new ScriptedHttpMessageHandler();
         handler.Enqueue(TestHarness.JsonResponse(200, whoami));
         using var client = TestHarness.BuildClient(handler);
@@ -177,6 +178,9 @@ public class ResourceAuthActorsTests
         var result = await client.Auth.WhoamiAsync();
 
         Assert.Equal("bot", result.Actor.Username);
-        Assert.Single(result.Roles);
+        var permission = Assert.Single(result.Permissions);
+        Assert.Equal("content.delete", permission.Permission);
+        Assert.Equal("global", permission.Scope);
+        Assert.Null(permission.Community);
     }
 }

@@ -5,18 +5,10 @@ using Actos.Transport;
 namespace Actos.Resources;
 
 /// <summary>
-/// Moderation and administration surface. Report review, content removal, user bans and role
-/// assignment are restricted to moderators/admins; <see cref="SetRoleAsync"/> additionally
-/// requires an admin actor.
+/// Moderation and administration surface. Report review, content removal, bans and scoped
+/// permission grants are restricted to moderators/admins; <see cref="GrantPermissionAsync"/> and
+/// <see cref="RevokePermissionAsync"/> additionally require an admin actor (<c>role.grant</c>).
 /// </summary>
-/// <remarks>
-/// Role assignment intentionally sends an explicit JSON <c>null</c> for the <c>role</c> field when
-/// the role argument is <see langword="null"/>: the typed <see cref="SetRoleRequest"/> DTO is
-/// serialized with the wire profile, which omits null members, so a typed body could not express
-/// "remove the role". A <see cref="RequestBody"/> (a <see cref="System.Text.Json.Nodes.JsonObject"/>)
-/// body is instead serialized with the null-preserving request profile, so <c>{"role": null}</c>
-/// reaches the server and "role null removes" holds.
-/// </remarks>
 public sealed class AdminResource
 {
     private readonly Actos.Transport.Transport _transport;
@@ -65,11 +57,18 @@ public sealed class AdminResource
             body: new ModerateDeleteRequest(Reason: reason),
             cancellationToken: cancellationToken);
 
-    /// <summary>Bans an actor. <paramref name="expiresAt"/> is an ISO-8601 timestamp for a temporary ban.</summary>
+    /// <summary>
+    /// Bans an actor. <paramref name="expiresAt"/> is an ISO-8601 timestamp for a temporary ban.
+    /// When <paramref name="community"/> is given the ban is scoped to that community;
+    /// <paramref name="deletePosts"/> additionally queues the deletion of the actor's posts there
+    /// and is only valid together with a community.
+    /// </summary>
     public Task<BanSummary> BanAsync(
         string username,
         string reason,
         string? expiresAt = null,
+        string? community = null,
+        bool? deletePosts = null,
         CancellationToken cancellationToken = default)
         => _transport.RequestAsync<BanSummary>(
             HttpMethod.Post,
@@ -77,35 +76,57 @@ public sealed class AdminResource
             body: new CreateBanRequest(
                 Reason: reason,
                 Username: username,
+                Community: community,
+                DeletePosts: deletePosts,
                 ExpiresAt: expiresAt),
             cancellationToken: cancellationToken);
 
-    /// <summary>Lifts an active ban. No-op if no ban is active.</summary>
-    public Task UnbanAsync(string username, CancellationToken cancellationToken = default)
+    /// <summary>Lifts an active ban. No-op if no ban is active. Omit <paramref name="community"/> to remove a platform-wide ban.</summary>
+    public Task UnbanAsync(
+        string username,
+        string? community = null,
+        CancellationToken cancellationToken = default)
         => _transport.RequestNoContentAsync(
             HttpMethod.Delete,
             $"/admin/bans/{username}",
+            QueryParams.Build(("community", community)),
             cancellationToken: cancellationToken);
 
     /// <summary>
-    /// Assigns (or, when <paramref name="role"/> is <see langword="null"/>, removes) an actor's role.
-    /// Admin only. A null role is sent as an explicit JSON <c>null</c> so the server can distinguish
-    /// "clear the role" from "unset" — see the class remarks.
+    /// Grants a scoped permission to an actor (admin only, requires <c>role.grant</c>). Idempotent.
+    /// <paramref name="community"/> scopes the grant to that community; omitted means global.
     /// </summary>
-    public Task SetRoleAsync(
+    public Task GrantPermissionAsync(
         string username,
-        string? role = null,
+        string permission,
+        string? community = null,
         CancellationToken cancellationToken = default)
-    {
-        var body = RequestBody.New()
-            .Set("username", username)
-            .Set("role", role, omitWhenNull: false);
-        return _transport.RequestNoContentAsync(
-            HttpMethod.Post,
-            "/admin/roles",
-            body: body,
+        => _transport.RequestNoContentAsync(
+            HttpMethod.Put,
+            "/admin/permissions",
+            body: new SetPermissionRequest(
+                Username: username,
+                Permission: permission,
+                Community: community),
             cancellationToken: cancellationToken);
-    }
+
+    /// <summary>
+    /// Revokes a scoped permission from an actor (admin only, requires <c>role.grant</c>).
+    /// Idempotent; removing a permission that does not exist succeeds.
+    /// </summary>
+    public Task RevokePermissionAsync(
+        string username,
+        string permission,
+        string? community = null,
+        CancellationToken cancellationToken = default)
+        => _transport.RequestNoContentAsync(
+            HttpMethod.Delete,
+            "/admin/permissions",
+            body: new SetPermissionRequest(
+                Username: username,
+                Permission: permission,
+                Community: community),
+            cancellationToken: cancellationToken);
 
     /// <summary>Lists the moderator/admin action log (audit log, one page).</summary>
     public Task<Page<AdminActionSummary>> ActionsAsync(

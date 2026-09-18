@@ -6,8 +6,8 @@ namespace Actos.Tests;
 
 /// <summary>
 /// Exercises the Reports and Admin resources: report submission, the moderator report queue,
-/// report resolution, content removal, banning, role assignment (including the explicit-null
-/// "role null removes" wire behaviour) and the admin audit log.
+/// report resolution, content removal, (community-scoped) banning, scoped permission grant/revoke
+/// and the admin audit log.
 /// </summary>
 public class ResourceReportsAdminTests
 {
@@ -127,6 +127,23 @@ public class ResourceReportsAdminTests
         Assert.Equal("bob", doc.RootElement.GetProperty("username").GetString());
         Assert.Equal("spam", doc.RootElement.GetProperty("reason").GetString());
         Assert.Equal("2026-02-01T00:00:00Z", doc.RootElement.GetProperty("expires_at").GetString()); // snake_case wire
+        Assert.False(doc.RootElement.TryGetProperty("community", out _)); // omitted when global
+        Assert.False(doc.RootElement.TryGetProperty("delete_posts", out _));
+    }
+
+    [Fact]
+    public async Task Ban_With_Community_And_DeletePosts_Sends_Scoped_Body()
+    {
+        var handler = new ScriptedHttpMessageHandler();
+        handler.Enqueue(TestHarness.JsonResponse(201, BanJson));
+        var admin = BuildAdmin(handler);
+
+        await admin.BanAsync("bob", "spam", community: "rust", deletePosts: true);
+
+        var body = handler.LastRequestBody!;
+        using var doc = JsonDocument.Parse(body);
+        Assert.Equal("rust", doc.RootElement.GetProperty("community").GetString());
+        Assert.True(doc.RootElement.GetProperty("delete_posts").GetBoolean());
     }
 
     [Fact]
@@ -140,45 +157,73 @@ public class ResourceReportsAdminTests
 
         Assert.Equal("/admin/bans/bob", handler.LastRequest!.RequestUri!.AbsolutePath);
         Assert.Equal(HttpMethod.Delete, handler.LastRequest.Method);
+        Assert.DoesNotContain("community=", handler.LastRequest.RequestUri.Query);
     }
 
     [Fact]
-    public async Task SetRole_With_Role_Sends_Value()
+    public async Task Unban_With_Community_Appends_Query()
     {
         var handler = new ScriptedHttpMessageHandler();
         handler.Enqueue(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
         var admin = BuildAdmin(handler);
 
-        await admin.SetRoleAsync("bob", "moderator");
+        await admin.UnbanAsync("bob", community: "rust");
 
-        Assert.Equal("/admin/roles", handler.LastRequest!.RequestUri!.AbsolutePath);
-        Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
-
-        var body = handler.LastRequestBody!;
-        using var doc = JsonDocument.Parse(body);
-        Assert.Equal("bob", doc.RootElement.GetProperty("username").GetString());
-        Assert.Equal("moderator", doc.RootElement.GetProperty("role").GetString());
+        Assert.Contains("community=rust", handler.LastRequest!.RequestUri!.Query);
+        Assert.Equal("/admin/bans/bob", handler.LastRequest.RequestUri.AbsolutePath);
     }
 
     [Fact]
-    public async Task SetRole_Null_Role_Sends_Explicit_Null()
+    public async Task GrantPermission_Puts_Global_Grant()
     {
-        // "role null removes": because the typed SetRoleRequest DTO would be serialized with the
-        // when-writing-null wire profile (omitting the field), SetRoleAsync must instead send an
-        // explicit JSON null via a JsonObject body so the server can clear the role.
         var handler = new ScriptedHttpMessageHandler();
         handler.Enqueue(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
         var admin = BuildAdmin(handler);
 
-        await admin.SetRoleAsync("bob", role: null);
+        await admin.GrantPermissionAsync("bob", "role.grant");
+
+        Assert.Equal("/admin/permissions", handler.LastRequest!.RequestUri!.AbsolutePath);
+        Assert.Equal(HttpMethod.Put, handler.LastRequest.Method);
 
         var body = handler.LastRequestBody!;
         using var doc = JsonDocument.Parse(body);
-
-        // The role member must be present AND null (not omitted) for "role null removes" to work.
-        var role = doc.RootElement.GetProperty("role");
-        Assert.Equal(JsonValueKind.Null, role.ValueKind);
         Assert.Equal("bob", doc.RootElement.GetProperty("username").GetString());
+        Assert.Equal("role.grant", doc.RootElement.GetProperty("permission").GetString());
+        Assert.False(doc.RootElement.TryGetProperty("community", out _)); // omitted for a global grant
+    }
+
+    [Fact]
+    public async Task GrantPermission_With_Community_Scopes_Grant()
+    {
+        var handler = new ScriptedHttpMessageHandler();
+        handler.Enqueue(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
+        var admin = BuildAdmin(handler);
+
+        await admin.GrantPermissionAsync("bob", "member.kick", community: "rust");
+
+        var body = handler.LastRequestBody!;
+        using var doc = JsonDocument.Parse(body);
+        Assert.Equal("member.kick", doc.RootElement.GetProperty("permission").GetString());
+        Assert.Equal("rust", doc.RootElement.GetProperty("community").GetString());
+    }
+
+    [Fact]
+    public async Task RevokePermission_Deletes_With_Body()
+    {
+        var handler = new ScriptedHttpMessageHandler();
+        handler.Enqueue(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
+        var admin = BuildAdmin(handler);
+
+        await admin.RevokePermissionAsync("bob", "member.kick", community: "rust");
+
+        Assert.Equal("/admin/permissions", handler.LastRequest!.RequestUri!.AbsolutePath);
+        Assert.Equal(HttpMethod.Delete, handler.LastRequest.Method);
+
+        var body = handler.LastRequestBody!;
+        using var doc = JsonDocument.Parse(body);
+        Assert.Equal("bob", doc.RootElement.GetProperty("username").GetString());
+        Assert.Equal("member.kick", doc.RootElement.GetProperty("permission").GetString());
+        Assert.Equal("rust", doc.RootElement.GetProperty("community").GetString());
     }
 
     [Fact]

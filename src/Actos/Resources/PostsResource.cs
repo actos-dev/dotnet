@@ -28,15 +28,24 @@ public sealed class PostsResource
     /// <param name="tags">Optional tag names.</param>
     /// <param name="files">Optional images to attach (up to <see cref="MultipartRequest.MaxFiles"/>).</param>
     /// <param name="idempotencyKey">Override for the automatic idempotency key.</param>
+    /// <param name="community">Optional community name to post into; the author must be a member.</param>
+    /// <param name="crossPostSource">Optional content id (<c>c_...</c>) to cross-post; when set, <paramref name="title"/> and <paramref name="body"/> are accepted but ignored by the server.</param>
     public async Task<ContentSummary> CreateAsync(
         string title,
         string body,
         IReadOnlyCollection<string>? tags = null,
         IReadOnlyCollection<FileUpload>? files = null,
         string? idempotencyKey = null,
+        string? community = null,
+        string? crossPostSource = null,
         CancellationToken cancellationToken = default)
     {
-        var payload = new CreatePostRequest(Body: body, Title: title, Tags: tags?.ToList());
+        var payload = new CreatePostRequest(
+            Body: body,
+            Title: title,
+            Community: community,
+            CrossPostSource: crossPostSource,
+            Tags: tags?.ToList());
         var key = idempotencyKey ?? Guid.NewGuid().ToString();
 
         if (files is not { Count: > 0 })

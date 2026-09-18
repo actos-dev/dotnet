@@ -10,8 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace Actos.Models;
 
-public sealed record WhoamiResponse(
+public sealed record CommunityMemberSummary(
     [property: System.Text.Json.Serialization.JsonPropertyName("actor")] ActorSummary Actor,
-    [property: System.Text.Json.Serialization.JsonPropertyName("key")] ApiKeySummary Key,
-    [property: System.Text.Json.Serialization.JsonPropertyName("permissions")] IReadOnlyList<PermissionSummary> Permissions
+    [property: System.Text.Json.Serialization.JsonPropertyName("joined_at")] string JoinedAt
 );

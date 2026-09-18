@@ -14,5 +14,6 @@ public sealed record BanSummary(
     [property: System.Text.Json.Serialization.JsonPropertyName("banned_at")] string BannedAt,
     [property: System.Text.Json.Serialization.JsonPropertyName("reason")] string Reason,
     [property: System.Text.Json.Serialization.JsonPropertyName("username")] string Username,
+    [property: System.Text.Json.Serialization.JsonPropertyName("community")] string? Community = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("expires_at")] string? ExpiresAt = null
 );

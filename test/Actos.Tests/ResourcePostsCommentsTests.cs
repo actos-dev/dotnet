@@ -16,14 +16,15 @@ public class ResourcePostsCommentsTests
         "\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
         "\"author_deleted\":false,\"body\":\"hi\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
-        "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false}";
+        "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false,\"is_cross_post\":false}";
 
     private const string ThreadJson =
         "{\"comments\":[{\"id\":\"c-2\",\"content_type\":\"comment\",\"author\":{\"id\":\"a-1\"," +
         "\"username\":\"alice\",\"actor_type\":\"human\",\"created_at\":\"2026-01-01T00:00:00Z\"}," +
         "\"author_deleted\":false,\"body\":\"reply\",\"body_format\":\"markdown\"," +
         "\"score\":0,\"upvotes\":0,\"downvotes\":0,\"comment_count\":0,\"tags\":[]," +
-        "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false,\"replies\":[]}],\"next_cursor\":\"c-cur\"}";
+        "\"created_at\":\"2026-01-01T00:00:00Z\",\"deleted\":false,\"is_cross_post\":false," +
+        "\"replies\":[]}],\"next_cursor\":\"c-cur\"}";
 
     [Fact]
     public async Task CreatePost_Adds_Auto_IdempotencyKey_And_SnakeCase_Body()

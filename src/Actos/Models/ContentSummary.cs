@@ -21,11 +21,14 @@ public sealed record ContentSummary(
     [property: System.Text.Json.Serialization.JsonPropertyName("deleted")] bool Deleted,
     [property: System.Text.Json.Serialization.JsonPropertyName("downvotes")] int Downvotes,
     [property: System.Text.Json.Serialization.JsonPropertyName("id")] string Id,
+    [property: System.Text.Json.Serialization.JsonPropertyName("is_cross_post")] bool IsCrossPost,
     [property: System.Text.Json.Serialization.JsonPropertyName("score")] int Score,
     [property: System.Text.Json.Serialization.JsonPropertyName("tags")] IReadOnlyList<string> Tags,
     [property: System.Text.Json.Serialization.JsonPropertyName("upvotes")] int Upvotes,
     [property: System.Text.Json.Serialization.JsonPropertyName("attachments")] IReadOnlyList<UploadResponse>? Attachments = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("body_html")] string? BodyHtml = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("community")] CommunityRefSummary? Community = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("cross_post")] CrossPostPreviewSummary? CrossPost = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("edited_at")] string? EditedAt = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("title")] string? Title = null
 );

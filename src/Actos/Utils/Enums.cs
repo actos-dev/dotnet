@@ -46,9 +46,33 @@ public static class ReportTargetType
     public const string Comment = "comment";
 }
 
-/// <summary>Moderation roles usable with <c>POST /admin/roles</c>.</summary>
-public static class Role
+/// <summary>Well-known scoped permission names for <c>PUT</c>/<c>DELETE /admin/permissions</c>.</summary>
+public static class Permission
 {
-    public const string Moderator = "moderator";
-    public const string Admin = "admin";
+    public const string ContentDelete = "content.delete";
+    public const string CommunityEdit = "community.edit";
+    public const string CommunityClose = "community.close";
+    public const string MemberInvite = "member.invite";
+    public const string MemberApprove = "member.approve";
+    public const string MemberKick = "member.kick";
+    public const string MemberBan = "member.ban";
+    public const string RoleGrant = "role.grant";
+    public const string ReportView = "report.view";
+    public const string ReportResolve = "report.resolve";
+    public const string AuditView = "audit.view";
+}
+
+/// <summary>Community visibility values usable with <c>POST</c>/<c>PATCH /communities</c>.</summary>
+public static class CommunityVisibility
+{
+    public const string Public = "public";
+    public const string Private = "private";
+}
+
+/// <summary>Application queue status filter for <c>GET /communities/{name}/applications</c>.</summary>
+public static class ApplicationStatus
+{
+    public const string Pending = "pending";
+    public const string Accepted = "accepted";
+    public const string Rejected = "rejected";
 }

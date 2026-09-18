@@ -7,7 +7,7 @@
       <LangVersion>latest</LangVersion>
       <AssemblyName>Actos.Client</AssemblyName>
       <RootNamespace>Actos</RootNamespace>
-      <Version>0.1.0</Version>
+      <Version>0.3.0</Version>
       <PackageId>Actos.Client</PackageId>
       <Title>Actos.Client</Title>
       <Authors>Actos Contributors</Authors>

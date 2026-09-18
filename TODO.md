@@ -17,7 +17,9 @@
 ## 2. İkincil listelerde `StreamAsync` eksik
 - `StreamAsync` mevcut: `Actors`, `Feed` (list+following), `Comments`.
 - **Eksik** (node `iterate()` buna denk): `Tags.ListAsync/PostsAsync`, `Search.ContentSearchAsync`,
-  `Saves.SavesAsync`, `Admin.ReportsAsync/ActionsAsync`, `Inbox.ListAsync`.
+  `Saves.SavesAsync`, `Admin.ReportsAsync/ActionsAsync`, `Inbox.ListAsync`,
+  `Communities.MembersAsync/MyInvitationsAsync/ApplicationsAsync` (dizin ve topluluk postları
+  için `StreamAsync`/`StreamPostsAsync` 0.3.0'da var).
 - Desen hazır (`PageExtensions.StreamAsync(Func<PageOptions,Task<Page<T>>>)`), her biri için ince ek.
 
 ## 3. İsteğe bağlı parite / polish

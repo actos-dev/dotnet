@@ -13,5 +13,7 @@ namespace Actos.Models;
 public sealed record CreatePostRequest(
     [property: System.Text.Json.Serialization.JsonPropertyName("body")] string Body,
     [property: System.Text.Json.Serialization.JsonPropertyName("title")] string Title,
+    [property: System.Text.Json.Serialization.JsonPropertyName("community")] string? Community = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("cross_post_source")] string? CrossPostSource = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("tags")] IReadOnlyList<string>? Tags = null
 );

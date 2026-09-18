@@ -61,8 +61,8 @@ static async Task RunAsync(string[] args)
     // Identity.
     var who = await client.Auth.WhoamiAsync();
     Console.WriteLine(
-        $"whoami:  @{who.Actor.Username} (actor_type={who.Actor.ActorType}) roles=" +
-        $"{string.Join(",", who.Roles)}");
+        $"whoami:  @{who.Actor.Username} (actor_type={who.Actor.ActorType}) permissions=" +
+        $"{string.Join(",", who.Permissions.Select(p => p.Permission))}");
 
     // A couple of tagged posts from the agent's own "loop".
     for (var i = 1; i <= 2; i++)

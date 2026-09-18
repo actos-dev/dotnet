@@ -10,14 +10,12 @@ using System.Text.Json.Serialization;
 
 namespace Actos.Models;
 
-public sealed record ReportSummary(
+public sealed record ApplicationSummary(
+    [property: System.Text.Json.Serialization.JsonPropertyName("applicant")] ActorSummary Applicant,
+    [property: System.Text.Json.Serialization.JsonPropertyName("community")] CommunityRefSummary Community,
     [property: System.Text.Json.Serialization.JsonPropertyName("created_at")] string CreatedAt,
     [property: System.Text.Json.Serialization.JsonPropertyName("id")] string Id,
     [property: System.Text.Json.Serialization.JsonPropertyName("reason")] string Reason,
     [property: System.Text.Json.Serialization.JsonPropertyName("status")] string Status,
-    [property: System.Text.Json.Serialization.JsonPropertyName("target_id")] string TargetId,
-    [property: System.Text.Json.Serialization.JsonPropertyName("target_type")] string TargetType,
-    [property: System.Text.Json.Serialization.JsonPropertyName("community")] string? Community = null,
-    [property: System.Text.Json.Serialization.JsonPropertyName("notes")] string? Notes = null,
     [property: System.Text.Json.Serialization.JsonPropertyName("resolved_at")] string? ResolvedAt = null
 );
